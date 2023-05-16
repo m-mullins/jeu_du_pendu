@@ -1,15 +1,15 @@
-def generer_mot(fichierTexte):
+def generer_mot(fichier_texte):
     import random
-    
+
     # Lire le fichier texte
-    with open(fichierTexte,"r") as file:
+    with open(fichier_texte, "r") as file:
         contenu = file.readlines()
-    
+
     # Choisir le mot au harsard
     mot = random.choice(contenu)
 
     # Enlever le \n
-    mot = mot.replace("\n","")
+    mot = mot.replace("\n", "")
 
     return mot
 
@@ -20,16 +20,16 @@ def entrer_lettre():
     return lettre
 
 
-def afficher_etat_lettres(motGenere,lettresDevinees):
+def afficher_etat_lettres(mot_genere, lettres_devinees):
     # Initialiser l'etat
     etat = ""
-    
+
     # Itérer à travers chaque lettre du mot
-    for i in range(len(motGenere)):
+    for i in range(len(mot_genere)):
         # Vérifier si la lettre a été devinée
-        if motGenere[i] in lettresDevinees:
-            etat += motGenere[i]
-             
+        if mot_genere[i] in lettres_devinees:
+            etat += mot_genere[i]
+
         # Afficher "_" sinon
         else:
             etat += "_"
@@ -41,93 +41,100 @@ def afficher_etat_lettres(motGenere,lettresDevinees):
 
 def calculer_lettres_restantes(etat):
     # Initialiser le nombre de lettres restantes
-    lettresRestantes = 0
+    lettres_restantes = 0
 
     # Itérer à travers chaque lettre de l'etat
     for i in range(len(etat)):
         if etat[i] == "_":
-            lettresRestantes += 1
-        
+            lettres_restantes += 1
+
     # Retourner le nombre de lettres restantes
-    return lettresRestantes
+    return lettres_restantes
 
 
-def vérifier_etat_jeu(lettresManquees,lettresRestantes,nombreChances):
+def vérifier_etat_jeu(lettres_manquees, lettres_restantes, nombre_chances):
     # Initialiser l'état
-    etatJeu = ""
+    etat_jeu = ""
 
     # Calculer les chances utilisées
-    chancesUtilisees = len(lettresManquees)
+    chances_utilisees = len(lettres_manquees)
 
     # Vérifier si l'usager a gagné
-    if lettresRestantes == 0:
-        etatJeu = "Victoire"
+    if lettres_restantes == 0:
+        etat_jeu = "Victoire"
 
     # Vérifier si l'usager a perdu
-    elif chancesUtilisees >= nombreChances:
-        etatJeu = "Défaite"
+    elif chances_utilisees >= nombre_chances:
+        etat_jeu = "Défaite"
 
     # Calculer les chances restantes si ni gagné ou perdu
     else:
-        chancesRestantes = 0
-        chancesRestantes = nombreChances - chancesUtilisees
-        etatJeu = str(chancesRestantes)
+        chances_restantes = 0
+        chances_restantes = nombre_chances - chances_utilisees
+        etat_jeu = str(chances_restantes)
 
     # Retourner l'état du jeu
-    return etatJeu  
+    return etat_jeu
 
 
 def jouer_au_pendu():
 
     # Initialiser les variables et constantes
     NOMBRES_CHANCES = 6
-    chancesUtilisees = 0
-    lettresDevinees = []
-    lettresManquees = []
+    chances_utilisees = 0
+    lettres_devinees = []
+    lettres_manquees = []
+
+    # Afficher un mot d'introduction
+    print("********* Jeu du pendu *********\n\
+Ce programme permet de jour au pendu.\n\
+Commencez pas entrer une lettre dans le terminal!\n")
 
     # Générer un mot au hasard
-    motGenere = generer_mot("mots_pendu.txt")
+    mot_genere = generer_mot("mots_pendu.txt")
 
     # Jouer tant que le joueur a des chances
-    while chancesUtilisees < NOMBRES_CHANCES:       
+    while chances_utilisees < NOMBRES_CHANCES:
         # Afficher l'etat actuel des mots
-        etatLettres = afficher_etat_lettres(motGenere,lettresDevinees)
+        etat_lettres = afficher_etat_lettres(mot_genere, lettres_devinees)
 
         # Calculer le nombres de lettres restantes
-        lettresRestantes = calculer_lettres_restantes(etatLettres)
+        lettres_restantes = calculer_lettres_restantes(etat_lettres)
 
         # Vérifier si l'usager a gagné
-        etatJeu = vérifier_etat_jeu(lettresManquees,lettresRestantes,NOMBRES_CHANCES)
-        if etatJeu == "Victoire":
+        etat_jeu = vérifier_etat_jeu(lettres_manquees, lettres_restantes, NOMBRES_CHANCES)
+        if etat_jeu == "Victoire":
             print("Vous avez gagné")
             return
 
         # Demander au joueur une nouvelle lettre
-        nouvelleLettre = entrer_lettre()
+        nouvelle_lettre = entrer_lettre()
 
         # Vérifier si la lettre est dans le mot
-        if nouvelleLettre in motGenere:
+        if nouvelle_lettre in mot_genere:
             # Mettre à jour la liste de lettres trouvées
-            lettresDevinees.append(nouvelleLettre)
-            print(f"La lettre {nouvelleLettre} est dans le mot")
+            lettres_devinees.append(nouvelle_lettre)
+            print(f"La lettre {nouvelle_lettre} est dans le mot")
 
         else:
             # Mettre à jour la liste de lettres manquées
-            lettresManquees.append(nouvelleLettre)
+            lettres_manquees.append(nouvelle_lettre)
 
             # Incrémenter le nombre de chances utilisées
-            chancesUtilisees += 1
-            print(f"La lettre {nouvelleLettre} n'est pas dans le mot")
+            chances_utilisees += 1
+            print(f"La lettre {nouvelle_lettre} n'est pas dans le mot")
 
             # Vérifier si l'usager a perdu et quitter si oui
-            etatJeu = vérifier_etat_jeu(lettresManquees,lettresRestantes,NOMBRES_CHANCES)
-            if etatJeu == "Défaite":
+            etat_jeu = vérifier_etat_jeu(lettres_manquees, lettres_restantes, NOMBRES_CHANCES)
+            if etat_jeu == "Défaite":
                 print("Vous avez perdu")
+                print(f"Le mot était: {mot_genere}")
                 return
-            
+
             # Afficher le nombre de chances restantes sinon
             else:
-                chancesRestantes = NOMBRES_CHANCES - chancesUtilisees
+                chancesRestantes = NOMBRES_CHANCES - chances_utilisees
                 print(f"Il vous reste {chancesRestantes} chances")
+
 
 jouer_au_pendu()
